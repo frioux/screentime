@@ -19,18 +19,19 @@ jobs:
         with:
           go-version: "1.22"
 
-      - name: Install ARM cross-compiler
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y gcc-arm-linux-gnueabihf
+      - name: Set up Zig
+        uses: mlugg/setup-zig@v1
+        with:
+          version: 0.13.0
 
-      - name: Build for Raspberry Pi (ARM32)
+      - name: Build for Raspberry Pi (ARM32, static musl)
         run: |
           CGO_ENABLED=1 \
           GOOS=linux \
           GOARCH=arm \
           GOARM=7 \
-          CC=arm-linux-gnueabihf-gcc \
+          CC="zig cc -target arm-linux-musleabihf" \
+          CXX="zig c++ -target arm-linux-musleabihf" \
           go build -o screentime-agent-pi ./cmd/screentime-agent
 
       - name: Upload artifact
@@ -38,4 +39,3 @@ jobs:
         with:
           name: screentime-agent-pi
           path: screentime-agent-pi
-
