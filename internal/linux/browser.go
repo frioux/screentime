@@ -164,3 +164,4 @@ func FindChromiumSessionPath() (string, error) {
 	return "", fmt.Errorf("no chromium session found")
 }
 
+

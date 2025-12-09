@@ -46,3 +46,4 @@ func (c *Categorizer) Categorize(domain string) string {
 	return "uncategorized"
 }
 
+

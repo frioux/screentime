@@ -100,3 +100,4 @@ func DefaultFirefoxRecoveryPath() (string, error) {
 	return "", fmt.Errorf("no Firefox profile with recovery file found")
 }
 
+

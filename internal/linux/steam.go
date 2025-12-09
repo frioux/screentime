@@ -163,3 +163,4 @@ func (s *SteamDetector) lookupGameName(appID string) (string, error) {
 	return name, nil
 }
 
+
