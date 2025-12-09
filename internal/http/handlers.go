@@ -10,10 +10,32 @@ import (
 )
 
 func (s *Server) registerRoutes(mux *http.ServeMux) {
-	mux.HandleFunc("/healthz", s.handleHealthz)
-	mux.HandleFunc("/status", s.handleStatus)
-	mux.HandleFunc("/sessions", s.handleSessions)
-	mux.HandleFunc("/usage/today", s.handleUsageToday)
+	var endpoints []string
+
+	register := func(pattern string, handler func(http.ResponseWriter, *http.Request)) {
+		endpoints = append(endpoints, pattern)
+		mux.HandleFunc(pattern, handler)
+	}
+
+	register("/healthz", s.handleHealthz)
+	register("/status", s.handleStatus)
+	register("/sessions", s.handleSessions)
+	register("/usage/today", s.handleUsageToday)
+
+	// Root endpoint lists all endpoints (including itself)
+	endpoints = append([]string{"/"}, endpoints...)
+	mux.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+		if r.URL.Path != "/" {
+			http.NotFound(w, r)
+			return
+		}
+		resp := struct {
+			Endpoints []string `json:"endpoints"`
+		}{
+			Endpoints: endpoints,
+		}
+		writeJSON(w, resp)
+	})
 }
 
 func (s *Server) handleHealthz(w http.ResponseWriter, r *http.Request) {
