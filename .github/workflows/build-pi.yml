@@ -41,7 +41,7 @@ jobs:
           GOARCH=amd64 \
           CC="zig cc -target x86_64-linux-musl" \
           CXX="zig c++ -target x86_64-linux-musl" \
-          go build -o linux-agent-amd64 ./cmd/linux-agent
+          go build -ldflags '-linkmode external -extldflags "-static"' -o linux-agent-amd64 ./cmd/linux-agent
 
       - name: Build linux-agent for ARM32 (static musl)
         run: |
@@ -51,7 +51,7 @@ jobs:
           GOARM=7 \
           CC="zig cc -target arm-linux-musleabihf" \
           CXX="zig c++ -target arm-linux-musleabihf" \
-          go build -o linux-agent-arm32 ./cmd/linux-agent
+          go build -ldflags '-linkmode external -extldflags "-static"' -o linux-agent-arm32 ./cmd/linux-agent
 
       - name: Upload screentime-agent-pi
         uses: actions/upload-artifact@v4
