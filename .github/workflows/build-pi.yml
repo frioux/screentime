@@ -1,4 +1,4 @@
-name: Build for Raspberry Pi
+name: Build Agents
 
 on:
   push:
@@ -24,7 +24,7 @@ jobs:
         with:
           version: 0.13.0
 
-      - name: Build for Raspberry Pi (ARM32, static musl)
+      - name: Build screentime-agent for Raspberry Pi (ARM32, static musl)
         run: |
           CGO_ENABLED=1 \
           GOOS=linux \
@@ -34,8 +34,39 @@ jobs:
           CXX="zig c++ -target arm-linux-musleabihf" \
           go build -o screentime-agent-pi ./cmd/screentime-agent
 
-      - name: Upload artifact
+      - name: Build linux-agent for AMD64 (static musl)
+        run: |
+          CGO_ENABLED=1 \
+          GOOS=linux \
+          GOARCH=amd64 \
+          CC="zig cc -target x86_64-linux-musl" \
+          CXX="zig c++ -target x86_64-linux-musl" \
+          go build -o linux-agent-amd64 ./cmd/linux-agent
+
+      - name: Build linux-agent for ARM32 (static musl)
+        run: |
+          CGO_ENABLED=1 \
+          GOOS=linux \
+          GOARCH=arm \
+          GOARM=7 \
+          CC="zig cc -target arm-linux-musleabihf" \
+          CXX="zig c++ -target arm-linux-musleabihf" \
+          go build -o linux-agent-arm32 ./cmd/linux-agent
+
+      - name: Upload screentime-agent-pi
         uses: actions/upload-artifact@v4
         with:
           name: screentime-agent-pi
           path: screentime-agent-pi
+
+      - name: Upload linux-agent-amd64
+        uses: actions/upload-artifact@v4
+        with:
+          name: linux-agent-amd64
+          path: linux-agent-amd64
+
+      - name: Upload linux-agent-arm32
+        uses: actions/upload-artifact@v4
+        with:
+          name: linux-agent-arm32
+          path: linux-agent-arm32
